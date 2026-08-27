@@ -1,13 +1,13 @@
 
 
-# Theed – Cadastro de Nomes com Node.js & PostgreSQL (Docker)
+# Aplicação simples conteinerizada em Docker de Cadastro de Nomes com Node.js & PostgreSQL
 
 ![Node.js](https://img.shields.io/badge/Node.js-v18-339933?logo=node.js&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-v15-4169E1?logo=postgresql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-v20+-2496ED?logo=docker&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-v4-000000?logo=express&logoColor=white)
 
-O **Theed** é uma aplicação web monolítica simplificada, desenvolvida para demonstrar na prática como construir, estruturar e containerizar um ecossistema focado em **Node.js** e banco de dados **Postgres** utilizando as melhores práticas de Docker.
+Aplicação web monolítica simplificada, desenvolvida para demonstrar na prática como construir, estruturar e containerizar um ecossistema focado em **Node.js** e banco de dados **Postgres** utilizando as melhores práticas de Docker.
 
 ---
 
@@ -46,7 +46,7 @@ O projeto foi estruturado com foco em performance, portabilidade e segurança:
 
 ## Estrutura do Projeto
 ```text
-theed/
+docker/
 ├── src/
 │   └── index.js          # Servidor Express, conexão com Sequelize e Views (SSR)
 ├── .dockerignore         # Remove arquivos locais (como node_modules) do build do Docker
@@ -90,14 +90,14 @@ Siga rigorosamente as etapas estruturadas abaixo para clonar, configurar e rodar
 Baixe os arquivos fontes do projeto diretamente do GitHub para a sua máquina local:
 
 
-> `git clone https://github.com/dhuberto/theed.git`
+> `git clone https://github.com/dhuberto/docker.git`
 
 ### Passo 2: Acessar o Diretório do Projeto
 
 Navegue até a pasta raiz criada pelo Git:
 
 
-> `cd theed`
+> `cd docker`
 
 ### Passo 3: Configurar as Variáveis de Ambiente
 
@@ -120,7 +120,7 @@ Execute o comando de orquestração para construir a imagem customizada do Node.
 
 Assim que o processo do Docker Compose finalizar a inicialização de todos os serviços com sucesso, abra o navegador web e acesse o endereço abaixo:
 
-Na interface do **Theed**, basta digitar um nome no campo do formulário e clicar em **Cadastrar**. As informações serão processadas pelo servidor Node.js e salvas na tabela do PostgreSQL instantaneamente, atualizando a listagem SSR abaixo.
+Na interface do **docker**, basta digitar um nome no campo do formulário e clicar em **Cadastrar**. As informações serão processadas pelo servidor Node.js e salvas na tabela do PostgreSQL instantaneamente, atualizando a listagem SSR abaixo.
 
 ## Resolução de Problemas Comuns (Troubleshooting)
 
@@ -163,10 +163,10 @@ Caso necessite expurgar completamente o ambiente, removendo inclusive os volumes
 
 > `docker compose down -v` #(-v remove volumes)
 > 
-> `docker rmi theed-app`
+> `docker rmi docker-app`
 > 
 > `docker rmi postgres:15-alpine`
 > 
 > `cd ..`
 > 
-> `rm -rf theed`
+> `rm -rf docker`
