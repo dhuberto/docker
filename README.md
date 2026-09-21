@@ -158,7 +158,7 @@ plano, liberando o prompt imediatamente.
 docker compose ps
 
 # Logs da aplicação
-docker compose logs app --tail=20
+docker compose logs go-app --tail=20
 ```
 
 **Saída esperada nos logs:**
@@ -169,7 +169,6 @@ Conectado ao PostgreSQL
 Tabelas sincronizadas
 Servidor em http://localhost:3000
 ```
-
 ---
 
 ## Acesso à Aplicação
