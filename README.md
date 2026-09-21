@@ -187,7 +187,12 @@ go-app-postgres-go-1      Up X seconds (healthy)
 docker compose ps
 docker images | grep go-app
 ```
+# Publicar no GHCR (GitHub Container Registry)
 
+```bash
+docker tag go-app:latest ghcr.io/dhuberto/docker:latest
+docker push ghcr.io/dhuberto/docker:latest
+```
 ---
 
 ## Acesso à Aplicação
