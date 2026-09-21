@@ -1,18 +1,18 @@
 # =============================================================================
 # compose.yml — Orquestração (go-app + PostgreSQL)
 # =============================================================================
-# Sobe a aplicação go-app + um Postgres 15.
+# Sobe a aplicação go-app + um Postgres.
 # =============================================================================
 name: go-app
 
 services:
   # ---------------------------------------------------------------------------
-  # Banco de dados — Postgres 15 Alpine - atualize sempre a base com a versão mais nova
+  # Banco de dados — Postgres Alpine
   # ---------------------------------------------------------------------------
-  services:
+  # Usa a tag `alpine` (sempre a versão estável mais recente do Postgres).
+  # ---------------------------------------------------------------------------
   postgres-go:
-    # Sempre a versão mais recente do PostgreSQL 15 na base Alpine.
-    image: postgres:15-alpine
+    image: postgres:alpine
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${DB_USER}
@@ -32,7 +32,7 @@ services:
       start_period: 10s
 
   # ---------------------------------------------------------------------------
-  # Aplicação — Go + Alpine (imagem final ~15 MB)
+  # Aplicação — Go + Alpine (imagem final ~20 MB)
   # ---------------------------------------------------------------------------
   # As envs DB_* são as mesmas lidas pelo `src/main.go`. A porta 3000 é o
   # default do `PORT` na aplicação.
