@@ -179,3 +179,24 @@ Abra o navegador em:
 http://localhost:3000/
 ```
 
+---
+
+## Sequência Completa de Limpeza
+
+Para deixar a máquina **exatamente como estava antes de clonar**:
+
+```bash
+# 1. Derruba containers e apaga os dados do banco
+cd ~/docker
+docker compose down -v
+
+# 2. Remove a imagem da aplicação
+docker rmi go-app-go-app 2>/dev/null || true
+
+# 3. (Opcional) Remove a imagem do Postgres se não for usar em outros projetos
+docker rmi postgres:15-alpine 2>/dev/null || true
+
+# 4. Remove o clone local
+cd ~
+rm -rf docker
+```
