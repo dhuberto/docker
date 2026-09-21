@@ -182,6 +182,12 @@ go-app-1                  Up X seconds
 go-app-postgres-go-1      Up X seconds (healthy)
 ```
 
+## Listar a imagem criada
+```bash
+docker compose ps
+docker images | grep go-app
+```
+
 ---
 
 ## Acesso à Aplicação
