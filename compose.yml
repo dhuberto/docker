@@ -7,9 +7,11 @@ name: go-app
 
 services:
   # ---------------------------------------------------------------------------
-  # Banco de dados — Postgres 15 Alpine
+  # Banco de dados — Postgres 15 Alpine - atualize sempre a base com a versão mais nova
   # ---------------------------------------------------------------------------
+  services:
   postgres-go:
+    # Sempre a versão mais recente do PostgreSQL 15 na base Alpine.
     image: postgres:15-alpine
     restart: unless-stopped
     environment:
