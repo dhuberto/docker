@@ -23,7 +23,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
     healthcheck:
       # $$ escapa a substituição do Compose: o sh do container expande
       # $POSTGRES_USER e $POSTGRES_DB (definidos em `environment:`).
