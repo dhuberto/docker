@@ -148,6 +148,7 @@ Execute o Compose para construir a imagem Go, baixar o Postgres oficial e
 conectá-los na mesma rede virtual interna:
 
 ```bash
+go mod tidy
 docker compose up -d --build
 ```
 
