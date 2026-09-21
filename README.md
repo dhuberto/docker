@@ -210,33 +210,7 @@ curl http://localhost:3000/healthz
 
 ---
 
-## Como Encerrar o Ambiente
-
-### Parar os containers (mantém os dados)
-
-```bash
-docker compose down
-```
-
-### Reset total (apaga os dados)
-
-```bash
-docker compose down -v --remove-orphans
-```
-
-### Ver logs
-
-```bash
-docker compose logs go-app       --tail=20
-docker compose logs postgres-go  --tail=20
-docker compose logs -f            # acompanha em tempo real
-```
-
----
-
-## Sequência Completa de Limpeza
-
-Para deixar a VM **exatamente como estava antes de clonar**:
+## Limpeza Completa
 
 ```bash
 # 1. Derruba containers e apaga os dados do banco
