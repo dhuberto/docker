@@ -37,9 +37,10 @@ segurança:
 
 ### Dockerfile (Build Otimizado)
 
-- **Imagem Base Alpine (`alpine:3.20`):** A imagem final tem cerca de
-  **~15 MB**, diminuindo o tempo de deploy e a superfície de ataque para
-  vulnerabilidades.
+- **Imagem Base Alpine (`alpine:3.21`):** A imagem final tem cerca de
+  **~20 MB**, uma fração do tamanho de uma base Debian/Ubuntu tradicional
+  (~80 MB) ou de uma imagem Node.js completa (~180 MB). Isso reduz o tempo
+  de pull no deploy e diminui a superfície de ataque para vulnerabilidades.
 - **Multi-stage Build:** Divide o processo em duas etapas (`builder` e
   produção). O compilador Go e o cache de módulos ficam isolados no
   primeiro estágio, gerando uma imagem final enxuta.
