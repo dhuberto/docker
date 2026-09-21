@@ -141,16 +141,30 @@ cp .env.example .env
 
 ### Passo 4 — Inicializar o Ambiente
 
+Gerar/atualizar o `go.sum`
+
+Na primeira vez que você clona o repositório (ou sempre que alterar as
+dependências em `go.mod`), rode:
+
+```bash
+go mod tidy
+```
 Execute o Compose para construir a imagem Go, baixar o Postgres oficial e
 conectá-los na mesma rede virtual interna:
 
 ```bash
-go mod tidy
 docker compose up -d --build
 ```
 
 **O que a flag `-d` (detached) faz?** Executa os containers em segundo
 plano, liberando o prompt imediatamente.
+
+Fazer os Testes
+
+```bash
+go test ./...
+go vet ./...
+```
 
 ### Passo 5 — Verificar se subiu
 
