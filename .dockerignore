@@ -1,13 +1,12 @@
-node_modules
+# =============================================================================
+# .dockerignore — arquivos que NÃO vão para o contexto do build
+# =============================================================================
 .git
-.env
 .gitignore
-README.md
-Dockerfile
-.dockerignore
+.github
+.env
+.env.*
+*.md
 compose.yml
-*.log
-.nyc_output
-coverage
-.idea
-.vscode
+node_modules
+package*.json
