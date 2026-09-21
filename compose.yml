@@ -1,8 +1,16 @@
-name: theed
+# =============================================================================
+# compose.yml — Orquestração (go-app + PostgreSQL)
+# =============================================================================
+# Sobe a aplicação go-app + um Postgres 15.
+# =============================================================================
+name: go-app
+
 services:
-  db:
+  # ---------------------------------------------------------------------------
+  # Banco de dados — Postgres 15 Alpine
+  # ---------------------------------------------------------------------------
+  postgres-go:
     image: postgres:15-alpine
-    container_name: theed-db
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${DB_USER}
@@ -21,15 +29,22 @@ services:
       retries: 5
       start_period: 10s
 
-  app:
+  # ---------------------------------------------------------------------------
+  # Aplicação — Go + Alpine (imagem final ~15 MB)
+  # ---------------------------------------------------------------------------
+  # As envs DB_* são as mesmas lidas pelo `src/main.go`. A porta 3000 é o
+  # default do `PORT` na aplicação.
+  #
+  # DB_HOST=postgres-go → precisa bater com o nome do serviço do banco.
+  # ---------------------------------------------------------------------------
+  go-app:
     build: .
-    container_name: theed-app
     restart: unless-stopped
     depends_on:
-      db:
+      postgres-go:
         condition: service_healthy
     environment:
-      - DB_HOST=db
+      - DB_HOST=postgres-go
       - DB_PORT=5432
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
@@ -38,5 +53,8 @@ services:
     ports:
       - "3000:3000"
 
+# -----------------------------------------------------------------------------
+# Volume nomeado — persistência do Postgres
+# -----------------------------------------------------------------------------
 volumes:
   postgres_data:
