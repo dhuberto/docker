@@ -1,7 +1,7 @@
 {
-  "name": "theed",
+  "name": "go-app",
   "version": "1.0.0",
-  "description": "Cadastro de nomes com Node.js, Postgres e Docker",
+  "description": "Cadastro de nomes com Go, Postgres e Docker",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js"
