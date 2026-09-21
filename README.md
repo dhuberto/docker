@@ -71,16 +71,16 @@ segurança:
 ```
 docker/
 ├── src/
-│ ├── main.go # Servidor HTTP, conexão com Postgres e Views (SSR)
-│ └── main_test.go # Testes unitários dos handlers
-├── go.mod # Declaração do módulo Go e dependências
-├── go.sum # Checksums das dependências (gerado por go mod tidy)
-├── .dockerignore # Remove arquivos locais do build do Docker
-├── .env.example # Modelo de configuração para o ambiente
-├── .gitignore # Impede o envio de pastas locais e credenciais
-├── compose.yml # Orquestrador de serviços (Aplicação + Banco)
-├── Dockerfile # Configuração do build multi-stage da imagem
-└── README.md # Documentação oficial
+│   ├── main.go           # Servidor HTTP, conexão com Postgres e Views (SSR)
+│   └── main_test.go      # Testes unitários dos handlers
+├── go.mod                # Declaração do módulo Go e dependências
+├── go.sum                # Checksums das dependências (gerado por go mod tidy)
+├── .dockerignore         # Remove arquivos locais do build do Docker
+├── .env.example          # Modelo de configuração para o ambiente
+├── .gitignore            # Impede o envio de pastas locais e credenciais
+├── compose.yml           # Orquestrador de serviços (Aplicação + Banco)
+├── Dockerfile            # Configuração do build multi-stage da imagem
+└── README.md             # Documentação oficial
 ```
 
 ---
