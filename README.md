@@ -195,7 +195,7 @@ docker compose down -v
 docker rmi go-app-go-app 2>/dev/null || true
 
 # 3. (Opcional) Remove a imagem do Postgres se não for usar em outros projetos
-docker rmi postgres:15-alpine 2>/dev/null || true
+docker rmi postgres:latest 2>/dev/null || true
 
 # 4. Remove o clone local
 cd ~
