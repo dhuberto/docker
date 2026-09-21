@@ -1,16 +1,16 @@
 # =============================================================================
-# Dockerfile — Theed em Go
+# Dockerfile — Aplicação Go
 # =============================================================================
 # Multi-stage build:
-#   - Stage 1 (builder): compila o binário Go estático a partir de src/
-#   - Stage 2 (final):   copia só o binário. Imagem final ~15 MB
+#   - Stage 1 (builder): compila o binário Go estático
+#   - Stage 2 (final):   copia só o binário. Imagem final ~20 MB
 #
-# Estrutura: código da aplicação em src/, go.mod na raiz.
+# Estrutura: código em src/, go.mod na raiz.
 # CGO desabilitado → binário estático, roda em qualquer Linux.
 # =============================================================================
 
 # ---------- Stage 1: builder ----------
-FROM golang:1.22-alpine AS builder
+FROM golang:alpine AS builder
 
 WORKDIR /build
 
@@ -21,8 +21,8 @@ RUN go mod download
 # Copia o código-fonte da aplicação (src/).
 COPY src/ ./src/
 
-# Compila a partir de src/, gera binário estático em /build/app.
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /build/app ./src
+# Compila o binário estático em /build/go-app.
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /build/go-app ./src
 
 # ---------- Stage 2: final ----------
 FROM alpine:3.21
@@ -31,9 +31,9 @@ FROM alpine:3.21
 RUN apk add --no-cache ca-certificates
 
 WORKDIR /app
-COPY --from=builder /build/app /app/app
+COPY --from=builder /build/go-app /app/go-app
 
-# Usuário não-root (mesmo padrão do Dockerfile Node anterior).
+# Usuário não-root (princípio do menor privilégio).
 RUN addgroup -g 1001 -S appgroup && \
     adduser  -S appuser -u 1001 -G appgroup
 
@@ -41,4 +41,4 @@ USER appuser
 
 EXPOSE 3000
 
-CMD ["/app/app"]
+CMD ["/app/go-app"]
