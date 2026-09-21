@@ -190,6 +190,7 @@ Para deixar a máquina **exatamente como estava antes de clonar**:
 # 1. Derruba containers e apaga os dados do banco
 cd ~/docker
 docker compose down -v
+docker compose down -v --remove-orphans
 
 # 2. Remove a imagem da aplicação
 docker rmi go-app-go-app 2>/dev/null || true
