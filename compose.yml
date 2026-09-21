@@ -1,8 +1,6 @@
 # =============================================================================
 # compose.yml — Orquestração (go-app + PostgreSQL)
 # =============================================================================
-# Sobe a aplicação go-app + um Postgres.
-# =============================================================================
 name: go-app
 
 services:
@@ -23,10 +21,11 @@ services:
     ports:
       - "5432:5432"
     volumes:
+      # Postgres 18+ espera o mount em /var/lib/postgresql (não em /data).
       - postgres_data:/var/lib/postgresql
     healthcheck:
       # $$ escapa a substituição do Compose: o sh do container expande
-      # $POSTGRES_USER e $POSTGRES_DB (definidos em `environment:`).
+      # $POSTGRES_USER e $POSTGRES_DB.
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
@@ -40,8 +39,11 @@ services:
   # default do `PORT` na aplicação.
   #
   # DB_HOST=postgres-go → precisa bater com o nome do serviço do banco.
+  #
+  # image: go-app:latest → nome explícito da imagem (evita "go-app-go-app").
   # ---------------------------------------------------------------------------
   go-app:
+    image: go-app:latest
     build: .
     restart: unless-stopped
     depends_on:
