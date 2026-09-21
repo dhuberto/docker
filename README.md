@@ -74,7 +74,7 @@ docker/
 │   ├── main.go           # Servidor HTTP, conexão com Postgres e Views (SSR)
 │   └── main_test.go      # Testes unitários dos handlers
 ├── go.mod                # Declaração do módulo Go e dependências
-├── go.sum                # Checksums das dependências (gerado por go mod tidy)
+├── go.sum                # Checksums das dependências
 ├── .dockerignore         # Remove arquivos locais do build do Docker
 ├── .env.example          # Modelo de configuração para o ambiente
 ├── .gitignore            # Impede o envio de pastas locais e credenciais
@@ -87,7 +87,7 @@ docker/
 
 ## Pré-requisitos
 
-Você precisará do **Docker** e do **Docker Compose** instalados.
+Você precisará do **Docker** e do **Docker Compose** instalados na VM.
 
 ### Linux (Ubuntu/Debian)
 
@@ -116,7 +116,7 @@ docker compose version
 
 ---
 
-## Passo a Passo para Execução
+## Passo a Passo para Execução (na VM)
 
 ### Passo 1 — Clonar o Repositório
 
@@ -173,14 +173,34 @@ Tentativa 1 de conexão...
 🚀 Servidor em http://localhost:3000
 ```
 
+O container do Postgres deve aparecer com `(healthy)`:
+
+```
+NAME                      STATUS
+go-app-1                  Up X seconds
+go-app-postgres-go-1      Up X seconds (healthy)
+```
+
 ---
 
 ## Acesso à Aplicação
 
-Abra o navegador em:
+Da própria VM:
 
 ```
 http://localhost:3000/
+```
+
+De outra máquina na mesma rede (ex.: seu Windows acessando a VM):
+
+```
+http://<IP_DA_VM>:3000/
+```
+
+Para descobrir o IP da VM:
+
+```bash
+hostname -I | awk '{print $1}'
 ```
 
 Na interface, digite um nome e clique em **Cadastrar**. As informações
@@ -191,50 +211,6 @@ são gravadas na tabela do PostgreSQL e a listagem SSR atualiza na hora.
 ```bash
 curl http://localhost:3000/healthz
 # → ok
-```
-
----
-
-## Desenvolvimento Local (sem Docker)
-
-Se quiser rodar a aplicação direto na máquina (para debug ou testes):
-
-### Pré-requisitos
-
-- **Go 1.22+** instalado (`go version`)
-- Um **Postgres** acessível (local ou via `docker run`)
-
-### Preparar dependências
-
-```bash
-go mod tidy
-```
-
-### Rodar os testes
-
-```bash
-go test ./...
-go vet ./...
-```
-
-### Rodar a aplicação
-
-```bash
-export DB_HOST=localhost
-export DB_PORT=5432
-export DB_USER=appuser
-export DB_PASSWORD=mudar123
-export DB_NAME=appdb
-export PORT=3000
-
-go run ./src
-```
-
-### Build do binário
-
-```bash
-go build -ldflags="-s -w" -o /tmp/go-app ./src
-/tmp/go-app
 ```
 
 ---
@@ -266,7 +242,7 @@ docker compose logs -f            # acompanha em tempo real
 
 ## Sequência Completa de Limpeza
 
-Para deixar a máquina **exatamente como estava antes de clonar**:
+Para deixar a VM **exatamente como estava antes de clonar**:
 
 ```bash
 # 1. Derruba containers e apaga os dados do banco
@@ -283,72 +259,3 @@ docker rmi postgres:alpine 2>/dev/null || true
 cd ~
 rm -rf docker
 ```
-
-### Verificação final
-
-```bash
-docker ps -a     | grep -E "go-app|postgres-go"   # → vazio
-docker volume ls | grep go-app                    # → vazio
-docker images    | grep go-app                    # → vazio
-```
-
----
-
-## Resolução de Problemas Comuns
-
-### 1. `Port 3000 (ou 5432) is already in use`
-
-**Causa:** outro serviço local já está escutando na mesma porta.
-
-**Solução:** encerre o processo conflitante, ou edite o `compose.yml` e
-ajuste a porta exposta do host (ex.: `"3001:3000"`). Reinicie:
-
-```bash
-docker compose down
-docker compose up -d --build
-```
-
-### 2. `Conflict. The container name ... is already in use`
-
-**Causa:** container antigo com o mesmo nome ainda existe.
-
-**Solução:**
-
-```bash
-docker compose down
-docker rm -f go-app-1 go-app-postgres-go-1 2>/dev/null
-docker compose up -d --build
-```
-
-### 3. Interface mostra "Banco OFFLINE"
-
-**Causa:** o app subiu, mas a conexão com o Postgres falhou.
-
-**Solução:** verifique se o container do banco está `healthy`:
-
-```bash
-docker compose ps
-docker compose logs postgres-go --tail=20
-```
-
-Se o banco não subiu, cheque o `.env` (usuário, senha, nome do banco).
-
-### 4. Erro de permissão em `docker` (sem `sudo`)
-
-**Causa:** o usuário não está no grupo `docker`.
-
-**Solução:**
-
-```bash
-sudo usermod -aG docker $USER
-# encerre a sessão e abra de novo
-```
-
----
-
-## Referências
-
-- [`src/main.go`](src/main.go) — código da aplicação (Go)
-- [`src/main_test.go`](src/main_test.go) — testes unitários
-- [`compose.yml`](compose.yml) — orquestração dos serviços
-- [`Dockerfile`](Dockerfile) — build multi-stage da imagem
