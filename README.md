@@ -123,7 +123,7 @@ git clone https://github.com/dhuberto/docker.git
 ### Passo 2 — Acessar o Diretório do Projeto
 
 ```bash
-cd docker
+cd ~/docker
 ```
 
 ### Passo 3 — Configurar as Variáveis de Ambiente
@@ -144,6 +144,7 @@ Execute o Compose para construir a imagem Go, baixar o Postgres oficial e
 conectá-los na mesma rede virtual interna:
 
 ```bash
+go mod tidy
 docker compose up -d --build
 ```
 
