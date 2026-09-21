@@ -198,12 +198,6 @@ De outra máquina na mesma rede (ex.: seu Windows acessando a VM):
 http://<IP_DA_VM>:3000/
 ```
 
-Para descobrir o IP da VM:
-
-```bash
-hostname -I | awk '{print $1}'
-```
-
 Na interface, digite um nome e clique em **Cadastrar**. As informações
 são gravadas na tabela do PostgreSQL e a listagem SSR atualiza na hora.
 
@@ -228,7 +222,6 @@ docker compose down
 
 ```bash
 docker compose down -v --remove-orphans
-docker compose up -d --build
 ```
 
 ### Ver logs
