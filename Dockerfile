@@ -25,7 +25,7 @@ COPY src/ ./src/
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /build/app ./src
 
 # ---------- Stage 2: final ----------
-FROM alpine:3.20
+FROM alpine:3.21
 
 # Certificados TLS (útil se o Postgres usar SSL).
 RUN apk add --no-cache ca-certificates
