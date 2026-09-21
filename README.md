@@ -18,29 +18,27 @@ de Docker.
 ## Arquitetura do Sistema
 
 A aplicação adota o padrão de **Arquitetura Monolítica com Renderização
-no Servidor (Server-Side Rendering - SSR)**.
+no Servidor (SSR)**.
 
-- **Fluxo de Dados:** O navegador (cliente) faz uma requisição HTTP para o
-  servidor Go. O servidor se comunica com o banco PostgreSQL via
-  `database/sql` + driver `lib/pq`, processa as informações, monta
-  dinamicamente o HTML com CSS embutido e entrega a página pronta.
+- **Fluxo de Dados:** O navegador faz uma requisição HTTP para o servidor
+  Go. O servidor se comunica com o PostgreSQL via `database/sql` + driver
+  `lib/pq`, processa as informações, monta o HTML com CSS embutido e
+  entrega a página pronta.
 - **Vantagem:** Reduz a complexidade operacional, eliminando a necessidade
-  de gerenciar repositórios e deploys separados para o Frontend e o
-  Backend.
+  de gerenciar repositórios e deploys separados para Frontend e Backend.
 
 ---
 
 ## Justificativas Técnicas de Infraestrutura (DevOps)
 
-O projeto foi estruturado com foco em performance, portabilidade e
-segurança:
+O projeto foi estruturado com foco em performance, portabilidade e segurança:
 
 ### Dockerfile (Build Otimizado)
 
 - **Imagem Base Alpine (`alpine:3.21`):** A imagem final tem cerca de
   **~20 MB**, uma fração do tamanho de uma base Debian/Ubuntu tradicional
   (~80 MB) ou de uma imagem Node.js completa (~180 MB). Isso reduz o tempo
-  de pull no deploy e diminui a superfície de ataque para vulnerabilidades.
+  de pull no deploy e diminui a superfície de ataque.
 - **Multi-stage Build:** Divide o processo em duas etapas (`builder` e
   produção). O compilador Go e o cache de módulos ficam isolados no
   primeiro estágio, gerando uma imagem final enxuta.
@@ -51,7 +49,7 @@ segurança:
   seguindo o princípio do menor privilégio.
 - **Cache de Camadas:** `go.mod` e `go.sum` são copiados antes do
   código-fonte. Se apenas o código mudar, o Docker reaproveita o cache
-  das dependências sem baixar os módulos de novo.
+  das dependências.
 
 ### Docker Compose (`compose.yml`)
 
@@ -60,8 +58,8 @@ segurança:
   exposição de senhas no GitHub.
 - **Persistência com Volumes:** Utiliza um volume nomeado
   (`postgres_data`) atrelado ao diretório `/var/lib/postgresql/data` do
-  container, garantindo que os dados salvos persistam mesmo se o
-  container for reiniciado ou destruído.
+  container, garantindo que os dados persistam mesmo se o container for
+  reiniciado.
 - **Orquestração Inteligente (`depends_on` + `healthcheck`):** O serviço
   do app aguarda o banco reportar `healthy` antes de iniciar, evitando
   falhas de inicialização por perda de conectividade.
@@ -69,6 +67,7 @@ segurança:
 ---
 
 ## Estrutura do Projeto
+
 ```
 docker/
 ├── src/
@@ -104,6 +103,10 @@ sudo apt install docker.io docker-compose-v2 -y
 # Adiciona seu usuário ao grupo docker (evita 'sudo' em cada comando)
 sudo usermod -aG docker $USER
 ```
+
+> **Nota:** após o `usermod`, encerre a sessão do terminal e abra de novo
+> (ou faça logoff) para que o novo grupo seja carregado.
+
 ### Validando a instalação
 
 ```bash
@@ -141,14 +144,6 @@ cp .env.example .env
 
 ### Passo 4 — Inicializar o Ambiente
 
-Gerar/atualizar o `go.sum`
-
-Na primeira vez que você clona o repositório (ou sempre que alterar as
-dependências em `go.mod`), rode:
-
-```bash
-go mod tidy
-```
 Execute o Compose para construir a imagem Go, baixar o Postgres oficial e
 conectá-los na mesma rede virtual interna:
 
@@ -158,13 +153,6 @@ docker compose up -d --build
 
 **O que a flag `-d` (detached) faz?** Executa os containers em segundo
 plano, liberando o prompt imediatamente.
-
-Fazer os Testes
-
-```bash
-go test ./...
-go vet ./...
-```
 
 ### Passo 5 — Verificar se subiu
 
@@ -180,10 +168,11 @@ docker compose logs go-app --tail=20
 
 ```
 Tentativa 1 de conexão...
-Conectado ao PostgreSQL
-Tabelas sincronizadas
-Servidor em http://localhost:3000
+✅ Conectado ao PostgreSQL
+✅ Tabelas sincronizadas
+🚀 Servidor em http://localhost:3000
 ```
+
 ---
 
 ## Acesso à Aplicação
@@ -192,6 +181,85 @@ Abra o navegador em:
 
 ```
 http://localhost:3000/
+```
+
+Na interface, digite um nome e clique em **Cadastrar**. As informações
+são gravadas na tabela do PostgreSQL e a listagem SSR atualiza na hora.
+
+**Health check:**
+
+```bash
+curl http://localhost:3000/healthz
+# → ok
+```
+
+---
+
+## Desenvolvimento Local (sem Docker)
+
+Se quiser rodar a aplicação direto na máquina (para debug ou testes):
+
+### Pré-requisitos
+
+- **Go 1.22+** instalado (`go version`)
+- Um **Postgres** acessível (local ou via `docker run`)
+
+### Preparar dependências
+
+```bash
+go mod tidy
+```
+
+### Rodar os testes
+
+```bash
+go test ./...
+go vet ./...
+```
+
+### Rodar a aplicação
+
+```bash
+export DB_HOST=localhost
+export DB_PORT=5432
+export DB_USER=appuser
+export DB_PASSWORD=mudar123
+export DB_NAME=appdb
+export PORT=3000
+
+go run ./src
+```
+
+### Build do binário
+
+```bash
+go build -ldflags="-s -w" -o /tmp/go-app ./src
+/tmp/go-app
+```
+
+---
+
+## Como Encerrar o Ambiente
+
+### Parar os containers (mantém os dados)
+
+```bash
+docker compose down
+```
+
+### Reset total (apaga os dados)
+
+```bash
+docker compose down -v --remove-orphans
+docker compose up -d --build
+```
+
+### Ver logs
+
+```bash
+docker compose logs go-app       --tail=20
+docker compose logs postgres-go  --tail=20
+docker compose logs -f            # acompanha em tempo real
 ```
 
 ---
@@ -203,7 +271,6 @@ Para deixar a máquina **exatamente como estava antes de clonar**:
 ```bash
 # 1. Derruba containers e apaga os dados do banco
 cd ~/docker
-docker compose down -v
 docker compose down -v --remove-orphans
 
 # 2. Remove a imagem da aplicação
@@ -216,3 +283,72 @@ docker rmi postgres:alpine 2>/dev/null || true
 cd ~
 rm -rf docker
 ```
+
+### Verificação final
+
+```bash
+docker ps -a     | grep -E "go-app|postgres-go"   # → vazio
+docker volume ls | grep go-app                    # → vazio
+docker images    | grep go-app                    # → vazio
+```
+
+---
+
+## Resolução de Problemas Comuns
+
+### 1. `Port 3000 (ou 5432) is already in use`
+
+**Causa:** outro serviço local já está escutando na mesma porta.
+
+**Solução:** encerre o processo conflitante, ou edite o `compose.yml` e
+ajuste a porta exposta do host (ex.: `"3001:3000"`). Reinicie:
+
+```bash
+docker compose down
+docker compose up -d --build
+```
+
+### 2. `Conflict. The container name ... is already in use`
+
+**Causa:** container antigo com o mesmo nome ainda existe.
+
+**Solução:**
+
+```bash
+docker compose down
+docker rm -f go-app-1 go-app-postgres-go-1 2>/dev/null
+docker compose up -d --build
+```
+
+### 3. Interface mostra "Banco OFFLINE"
+
+**Causa:** o app subiu, mas a conexão com o Postgres falhou.
+
+**Solução:** verifique se o container do banco está `healthy`:
+
+```bash
+docker compose ps
+docker compose logs postgres-go --tail=20
+```
+
+Se o banco não subiu, cheque o `.env` (usuário, senha, nome do banco).
+
+### 4. Erro de permissão em `docker` (sem `sudo`)
+
+**Causa:** o usuário não está no grupo `docker`.
+
+**Solução:**
+
+```bash
+sudo usermod -aG docker $USER
+# encerre a sessão e abra de novo
+```
+
+---
+
+## Referências
+
+- [`src/main.go`](src/main.go) — código da aplicação (Go)
+- [`src/main_test.go`](src/main_test.go) — testes unitários
+- [`compose.yml`](compose.yml) — orquestração dos serviços
+- [`Dockerfile`](Dockerfile) — build multi-stage da imagem
